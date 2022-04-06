@@ -1,52 +1,54 @@
-from bs4 import BeautifulSoup, PageElement, Tag, ResultSet
+from bs4 import BeautifulSoup, Tag
 import requests
 from typing import Callable
 
 from tv_series import TVGenre, TVSeries
 
 
-class TVSeriesScraper:
-    imdb_genre_link: str
+class IMDBScraper:
+    BASE_URL: str = "https://www.imdb.com"
 
-    def __init__(self, imdb_genre_link: str):
-        """Constructor for TVSeriesScraper
+    genre_path: str
+    search_path: str
+
+    def __init__(
+        self, genre_path: str = "/feature/genre", search_path: str = "/search/title/"
+    ):
+        self.genre_path = genre_path
+        self.search_path = search_path
+
+    def get_genres(self, media_type: str = "tv series") -> list[str]:
+        """Gets a list of genres for a specific type.
 
         Args:
-            imdb_genre_link (str): link to the page with top TV genres
-        """
-        self.imdb_genre_link = imdb_genre_link
+            type (str, optional): A string that corresponds to media type. Defaults to "tv series".
 
-    def load_genres(self) -> list[TVGenre]:
-        page = requests.get(self.imdb_genre_link)
+        Returns:
+            list[str]: A list of lowercase strings corresponding to the genres for a specified type.
+        """
+
+        page = requests.get(self.BASE_URL + self.genre_path)
         soup = BeautifulSoup(page.content, "html.parser")
 
-        h3s: ResultSet = soup.find_all("h3")
+        media_type_headers = soup.find_all("h3")
 
-        def is_tv_genre_link_div(tag: Tag):
-
-            tv_genre_header = None
-            for h3 in h3s:
-                if "TV Series by Genre" in h3.string:
-                    tv_genre_header = h3
+        def is_links_div_for_media_type(tag: Tag):
+            type_header = None
+            for header in media_type_headers:
+                if f"{media_type} by genre" in header.string.lower():
+                    type_header = header
                     break
 
             return (
                 "class" in tag.attrs
                 and "ab_links" in tag.attrs.get("class")
-                and tag.find(lambda elem: elem is tv_genre_header)
+                and tag.find(lambda elem: elem is type_header)
             )
 
-        tv_genre_div: Tag = soup.find_all(is_tv_genre_link_div)[0]
+        media_type_div = soup.find(is_links_div_for_media_type)
 
-        tv_genre_links = tv_genre_div.find_all("a")
+        genre_links = media_type_div.find_all("a")
 
-        tv_genres: list[TVGenre] = []
-        for elem in tv_genre_links:
-            name = elem.string.strip()
-            link = elem.attrs["href"]
+        genres = [link.string.strip().lower() for link in genre_links]
 
-            genre = TVGenre(name=name, link=link)
-
-            tv_genres.append(genre)
-
-        return tv_genres
+        return genres
