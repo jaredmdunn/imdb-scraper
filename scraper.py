@@ -1,11 +1,10 @@
 from bs4 import BeautifulSoup, Tag, ResultSet
 import requests
-from typing import Callable
-
-from tv_series import TVGenre, TVSeries
 
 
 class IMDBScraper:
+    """A class to scrape IMDB for movie and tv information."""
+
     BASE_URL: str = "https://www.imdb.com"
 
     genre_path: str
@@ -14,6 +13,12 @@ class IMDBScraper:
     def __init__(
         self, genre_path: str = "/feature/genre", search_path: str = "/search/title"
     ):
+        """Constructor for an IMDBScraper.
+
+        Args:
+            genre_path (str, optional): Specifies the path to access featured genres. Defaults to "/feature/genre".
+            search_path (str, optional): Specifies the path to search over different titles. Defaults to "/search/title".
+        """
         self.genre_path = genre_path
         self.search_path = search_path
 
@@ -63,6 +68,9 @@ class IMDBScraper:
         Args:
             genres (list[str], optional): A list of genres. Defaults to ["action"].
             title_types (list[str], optional): A list of title types. Defaults to ["tv series", "mini series"].
+
+        Returns:
+            list[dict]: A list of title objects that hold the name and rank of different titles.
         """
         genres_string: str = ""
 
