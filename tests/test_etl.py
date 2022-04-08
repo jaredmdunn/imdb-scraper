@@ -67,3 +67,13 @@ def test_read_top_50_series_by_genre_good_genre():
     else:
         # returns None if no file
         assert top_50_action == None
+
+
+def test_read_top_50_series_by_genre_good_genre():
+    top_50_action: DataFrame = etl.read_top_50_series_by_genre(genres=["foo"])
+    if os.path.isfile(etl.TOP_50_SERIES_BY_GENRE_PATH):
+        # zero columns
+        assert len(top_50_action.columns) == 0
+    else:
+        # returns None if no file
+        assert top_50_action == None
