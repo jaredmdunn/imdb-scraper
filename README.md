@@ -1,8 +1,8 @@
 # imdb-scraper
-A Python web scraper to get info on movies and series from IMDB
+A Python web scraper to get info on movies and series from IMDB.
 
 ## To Run:
-  1. Run `pip install requirements.txt` to set up your virtual environment.
+  1. Run `pip install -r requirements.txt` to set up your virtual environment.
   2. At the **imdb-scraper** directory run `python main.py`.
 
 ## Scraper (scraper.py)
