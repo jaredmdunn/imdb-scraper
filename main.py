@@ -1,15 +1,22 @@
+import etl
+
+
 def main():
-    # IMDB link: https://www.imdb.com/feature/genre?ref_=fn_asr_ge
+    """
+    Store top tv genres and top 50 series in parquet files.
+    Then read and print them out.
+    """
+    etl.store_tv_genres()
+    etl.store_top_50_series_by_genre()
 
-    # Plan of attach:
-    # 1. Grab popular tv series genres and their links from IMBD link
-    #    (store as dict -> convert to pandas dataframe -> convert to parquet file)
-    # USE [dataclass](https://docs.python.org/3/library/dataclasses.html)?
-    # 2. Loop through genres and collect top 50 tv shows from each:
-    #    store show title, rank, rating, year, etc. array of TVSeries
-    # 3. Convert array to dataframe to parquet file
+    genres = etl.read_tv_genres()
+    top_50_series_by_genre = etl.read_top_50_series_by_genre()
 
-    pass
+    top_50_action_series = etl.read_top_50_series_by_genre(genres=["action"])
+
+    print(genres)
+    print(top_50_series_by_genre)
+    print(top_50_action_series)
 
 
 if __name__ == "__main__":
